@@ -23,10 +23,14 @@ HgiMetalTexture::HgiMetalTexture(HgiMetal *hgi, HgiTextureDesc const & desc)
     MTLResourceOptions resourceOptions = MTLResourceStorageModePrivate;
     MTLTextureUsage usage = MTLTextureUsageShaderRead;
 
+#if !defined(ARCH_CPU_INTEL) 
+    // Some radeon GPUs on Intel Macs do not support MTLResourceStorageModeManaged or
+    // MTLResourceStorageModeShared for depth and stencil  buffers   
     if (desc.initialData && desc.pixelsByteSize > 0) {
         resourceOptions = hgi->GetCapabilities()->defaultStorageMode;
     }
-
+#endif
+    
     MTLPixelFormat mtlFormat = HgiMetalConversions::GetPixelFormat(
         desc.format, desc.usage);
 
